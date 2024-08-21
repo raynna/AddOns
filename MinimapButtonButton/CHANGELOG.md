@@ -1,0 +1,1 @@
+- Added support for addons that customize unit colors using a CUSTOM_CLASS_COLORS table

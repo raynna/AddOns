@@ -1,0 +1,7 @@
+## Interface: 40400
+## Title: Action Bar Simplifier
+## Notes: Enhances WoW UI by repositioning and simplifying the Experience and Reputation Bars while hiding unnecessary action bar art.
+## Author: HELLFIRE
+## SavedVariables: ActionBarSimplifierDB
+
+ActionBarSimplifier.lua

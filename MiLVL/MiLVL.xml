@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <Script file="Libs\LibStub\LibStub.lua"/>
+	<Frame name="MiLVL_MainFrame" />
+	<Frame name="MiLVL_RosterFrameTemplate" virtual="true">
+		<Frame name="frame" parent="MiLVL_RosterFrameTemplate">
+		
+		</Frame>
+		<Frame name="content" parent="frame">
+		
+		</Frame>
+	</Frame>
+	<GameTooltip name="MiLVL_Hidden_Tooltip" inherits="GameTooltipTemplate" parent="MiLVL_MainFrame" owner="MiLVL_MainFrame" hidden="true" />
+	<Texture name="MiLVL_ClassTextureTemplate" file="interface/talentframe/bg-monk-battledancer" virtual="true" >
+	  <Size>
+		<AbsDimension x="512" y="512"/>
+	  </Size>
+	  <Anchors>
+		<Anchor point="CENTER">
+		  <Offset>
+			<AbsDimension x="0" y="0"/>
+		  </Offset>
+		</Anchor>
+	  </Anchors>
+	  <!-- <TexCoords left="0.398" right="0.445" top="0.402" bottom="0.449"/> -->
+	</Texture>
+</Ui>
