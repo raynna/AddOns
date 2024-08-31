@@ -138,7 +138,7 @@ end
 
 function Bag:OnClick(button)
 	if button == 'RightButton' then
-		self:ShowFilters()
+		self:ShowMenu()
 	elseif (self.owned and not CursorHasItem()) or self:IsCached() then
 		self:Toggle()
 	elseif CursorHasItem() then
@@ -190,11 +190,10 @@ function Bag:Toggle()
 	self:SetFocus(true)
 end
 
-function Bag:ShowFilters()
-	if self:GetID() >= BACKPACK_CONTAINER and not self:IsCached() and ContainerFrame1FilterDropDown then
-		ContainerFrame1FilterDropDown:SetParent(self)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		ToggleDropDownMenu(1, nil, ContainerFrame1FilterDropDown, self, 0, 0)
+function Bag:ShowMenu()
+	if ContainerFrame13.SetBagID then
+		ContainerFrame13:SetBagID(self:GetID()) -- how I met your local function, now streaming on jali+
+		MenuUtil.CreateContextMenu(self, ContainerFrame13.PortraitButton.menuGenerator)
 	end
 end
 
@@ -221,12 +220,11 @@ end
 
 function Bag:Update()
 	local bag, cached = self:GetID(), self:IsCached()
-	local free = not cached and C.GetContainerNumFreeSlots(bag)
 	local icon = self.StaticIcons[bag]
 
 	if not icon then
 		if cached then
-			local data = self:GetOwner()[bag]
+			local data = self.frame:GetBagInfo(bag)
 			if data and data.link then
 				self.link, self.owned = 'item:' .. data.link, true
 				self.itemID, _,_,_, icon = GetItemInfoInstant(self.link)
@@ -239,13 +237,18 @@ function Bag:Update()
 			icon = GetInventoryItemTexture('player', self.slot)
 		end
 	elseif bag == REAGENTBANK_CONTAINER then
-		self.owned = IsReagentBankUnlocked()
+		if cached then
+			self.owned = self.frame:GetBagInfo(bag) and true
+		else
+			self.owned = IsReagentBankUnlocked()
+		end
 	end
 
 	local color = self.owned and 1 or 0.1
 	SetItemButtonTexture(self, icon or 'interface/paperdoll/ui-paperdoll-slot-bag')
 	SetItemButtonTextureVertexColor(self, 1, color, color)
 
+	local free = not cached and self.owned and C.GetContainerNumFreeSlots(bag)
 	self.Count:SetText((free or 0) > 0 and free or '')
 	self:UpdateToggle()
 	self:UpdateLock()
@@ -309,5 +312,6 @@ end
 
 --[[ Properties ]]--
 
+function Bag:IsCached() return self.frame:IsCached(self:GetID()) end
 function Bag:IsBankBag() return self:GetID() > Addon.NumBags end
 function Bag:IsCombinedBagContainer() end -- delicious hack

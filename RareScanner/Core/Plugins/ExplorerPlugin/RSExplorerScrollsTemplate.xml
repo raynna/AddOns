@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+	<Slider name="RSExplorerScrollBarTemplate" parentKey="scrollBar" virtual="true">
+		<Size x="10" y="0" />
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture name="$parentBG" setAllPoints="true" hidden="true" parentKey="trackBG" file="Interface\AddOns\RareScanner\Media\Textures\soulbindsassets.blp">
+					<Size>
+						<AbsDimension x="20" y="1548" />
+					</Size>
+					<TexCoords left="0.01123046875" right="0.02099609375" top="0.18359375" bottom="0.939453125" />
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\AddOns\RareScanner\Media\Textures\soulbindsassets.blp">
+					<Size>
+						<AbsDimension x="32" y="876" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="7" y="30" />
+						<Anchor point="BOTTOMRIGHT" x="7" y="-30" />
+					</Anchors>
+					<TexCoords left="0.02197265625" right="0.03759765625" top="0.18359375" bottom="0.611328125" />
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button name="$parentScrollUpButton" parentKey="UpButton" inherits="RSExplorerScrollUpButtonTemplate">
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP" x="0" y="15" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="HybridScrollFrameScrollUp_OnLoad" />
+					<OnClick function="HybridScrollFrameScrollButton_OnClick" />
+				</Scripts>
+			</Button>
+			<Button name="$parentScrollDownButton" parentKey="DownButton" inherits="RSExplorerScrollDownButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="-20" />
+				</Anchors>
+				<Scripts>
+					<OnLoad function="HybridScrollFrameScrollDown_OnLoad" />
+					<OnClick function="HybridScrollFrameScrollButton_OnClick" />
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnValueChanged function="HybridScrollFrame_OnValueChanged" />
+		</Scripts>
+		<ThumbTexture name="$parentThumbTexture" file="Interface\AddOns\RareScanner\Media\Textures\soulbindsassets.blp" parentKey="thumbTexture">
+			<Size x="10" y="24" />
+			<TexCoords left="0.00048828125" right="0.01025390625" top="0.02392578125" bottom="0.53369140625" />
+		</ThumbTexture>
+	</Slider>
+
+	<Button name="RSExplorerScrollUpButtonTemplate" virtual="true">
+		<Size x="10" y="10" />
+		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrolldownbutton-up" useAtlasSize="true" />
+		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrolldownbutton-up" useAtlasSize="true" />
+		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrolldownbutton-up" useAtlasSize="true" />
+		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrolldownbutton-up" useAtlasSize="true" alphaMode="ADD" />
+	</Button>
+
+	<Button name="RSExplorerScrollDownButtonTemplate" virtual="true">
+		<Size x="10" y="10" />
+		<NormalTexture parentKey="Normal" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrollupbutton-down" useAtlasSize="true" />
+		<PushedTexture parentKey="Pushed" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrollupbutton-down" useAtlasSize="true" />
+		<DisabledTexture parentKey="Disabled" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrollupbutton-down" useAtlasSize="true" />
+		<HighlightTexture parentKey="Highlight" inherits="UIPanelScrollBarButton" atlas="ui-scrollbar-scrollupbutton-down" useAtlasSize="true" alphaMode="ADD" />
+	</Button>
+</Ui>

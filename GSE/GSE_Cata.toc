@@ -1,0 +1,47 @@
+## Interface: 40400
+
+
+## Title: |cff0000FFGSE:|r |cFF00D1FFAdvanced Macro Compiler|r
+## Notes: Allows you to execute a sequence of macros without stopping on unusable spells.
+## Author: TimothyLuke
+## Version: 3.1.69
+## SavedVariables: GSEOptions GSELibrary GSEStorage GSE3Storage GSESpellCache
+## SavedVariablesPerCharacter: GSE_C GSELegacyLibraryBackup
+## OptionalDeps: WeakAuras Talented ElvUI Details WagoAnalytics
+## IconTexture: Interface\Addons\GSE_GUI\Assets\GSE_Logo_Dark_512
+
+## X-WoWI-ID: 23921
+## X-Curse-Project-ID: 101161
+## X-Wago-ID: kGr0YY6y
+
+# Lib
+embeds.xml
+
+# Setup Localization
+Localization\ModL_enUS.lua
+Localization\ModL_ptBR.lua
+Localization\ModL_frFR.lua
+Localization\ModL_deDE.lua
+Localization\ModL_itIT.lua
+Localization\ModL_koKR.lua
+Localization\ModL_esMX.lua
+Localization\ModL_ruRU.lua
+Localization\ModL_zhCN.lua
+Localization\ModL_esES.lua
+Localization\ModL_zhTW.lua
+
+# Startup
+API\Init.lua
+API\Statics.lua
+API\InitialOptions.lua
+
+
+# Storage and core
+API\StringFunctions.lua
+API\CharacterFunctions.lua
+API\Storage.lua
+API\Translator.lua
+API\Plugins.lua
+API\Serialisation.lua
+API\OneOffEvents.lua
+API\Events.lua
