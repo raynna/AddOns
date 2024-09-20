@@ -104,6 +104,9 @@ if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA
 			app.FunctionRunner.Run(C_QuestLog_RequestLoadQuestByID, questID);
 		end
 	end
+	if app.Debugging then
+		app.RequestLoadQuestByID = RequestLoadQuestByID
+	end
 
 	-- This event seems to fire synchronously from C_QuestLog.RequestLoadQuestByID if we already have the data
 	app:RegisterFuncEvent("QUEST_DATA_LOAD_RESULT", function(questID, success)
@@ -116,7 +119,7 @@ if C_QuestLog_RequestLoadQuestByID and pcall(app.RegisterEvent, app, "QUEST_DATA
 			if rawget(QuestNameFromServer, questID) == false then
 				QuestNameFromServer[questID] = nil
 				app.PrintDebug("Fresh Quest Name!",questID,QuestNameFromServer[questID])
-				app.HandleEvent("OnRefreshWindows")
+				app.CallbackEvent("OnRenderDirty")
 			end
 		else
 			-- this quest name cannot be populated by the server
@@ -216,8 +219,12 @@ app.AddEventHandler("OnSavedVariablesAvailable", function(currentCharacter, acco
 	local userignored = ATTAccountWideData.IGNORE_QUEST_PRINT
 	-- add user ignored to the list if any, don't save our hardcoded quests for everyone...
 	if userignored then
-		for i,questID in ipairs(userignored) do
-			IgnoreErrorQuests[questID] = 1;
+		for i,questID in pairs(userignored) do
+			if questID == 1 then
+				IgnoreErrorQuests[i] = 1;
+			else
+				IgnoreErrorQuests[questID] = 1;
+			end
 		end
 		-- a bunch of bad data got contaminated into literally everyones saved vars... so let's clean it
 		if IgnoreErrorQuests[7171] or IgnoreErrorQuests[8706] or IgnoreErrorQuests[10759]
@@ -697,7 +704,7 @@ app.CheckInaccurateQuestInfo = function(questRef, questChange, forceShow)
 		-- is marked as in the game
 		-- NOTE: Classic doesn't use the Filters Module yet. (TODO)
 		-- The logic is simple enough to where it shouldn't matter.
-		local inGame = not questRef.u or questRef.u > 2--app.Modules.Filter.Filters.InGame(questRef);
+		local inGame = app.Modules.Filter.Filters.InGame(questRef);
 		-- repeatable or not previously completed or the accepted quest was immediately completed prior to the check, or character in party sync
 		local incomplete = (questRef.repeatable or not completed or LastQuestTurnedIn == completed or IsPartySyncActive);
 		-- not missing pre-requisites
@@ -1359,9 +1366,11 @@ local createQuest = app.CreateClass("Quest", "questID", {
 		return t.name;
 	end or nil,
 	name = function(t)
+		-- TODO: need app.GetAutomaticHeaderData to provide name if not returned from server prior to using QuestNameDefault
 		return QuestNameFromID[t.questID] or RETRIEVING_DATA;
 	end,
 	icon = function(t)
+		-- TODO: need app.GetAutomaticHeaderData to provide icon
 		return app.GetIconFromProviders(t)
 			or (t.isWorldQuest and GetWorldQuestIcon(t))
 			or (t.repeatable and RepeatableQuestIcon)

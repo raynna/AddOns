@@ -1,6 +1,6 @@
 --[[
-	accountMoney.lua
-		A warband money display
+	A warband money display
+	All Rights Reserved
 --]]
 
 if not (C_Bank and C_Bank.FetchDepositedMoney) then
@@ -11,7 +11,7 @@ local ADDON, Addon = ...
 local Sushi = LibStub('Sushi-3.2')
 local L = LibStub('AceLocale-3.0'):GetLocale(ADDON)
 
-local Money = Addon.MoneyFrame:NewClass('AccountMoney')
+local Money = Addon.PlayerMoney:NewClass('AccountMoney')
 Money.Type = 'ACCOUNT'
 
 function Money:RegisterEvents()
@@ -35,12 +35,14 @@ function Money:OnClick(button)
 		Sushi.Popup:Cancel(BANK_MONEY_WITHDRAW_PROMPT)
 		Sushi.Popup:Toggle {
 			text = BANK_MONEY_DEPOSIT_PROMPT, moneyInput = 0, button1 = ACCEPT, button2 = CANCEL,
+			open = SOUNDKIT.MONEY_FRAME_OPEN, close = SOUNDKIT.MONEY_FRAME_CLOSE,
 			OnAccept = function(popup, money) C_Bank.DepositMoney(2, money) end
 		}
 	else
 		Sushi.Popup:Cancel(BANK_MONEY_DEPOSIT_PROMPT)
 		Sushi.Popup:Toggle {
 			text = BANK_MONEY_WITHDRAW_PROMPT, moneyInput = 0, button1 = ACCEPT, button2 = CANCEL,
+			open = SOUNDKIT.MONEY_FRAME_OPEN, close = SOUNDKIT.MONEY_FRAME_CLOSE,
 			OnAccept = function(popup, money) C_Bank.WithdrawMoney(2, money) end
 		}
 	end

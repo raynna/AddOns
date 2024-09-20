@@ -178,6 +178,11 @@ function HealBot_SkinDefault_NilData(skin, id)
     HealBot_Config.SkinDefault[skin][id]=nil
 end
 
+local sVars={["cBuff"]=HEALBOT_CUSTOM_en.."Buff",
+             ["cDebuff"]=HEALBOT_CUSTOM_en.."15"}
+function HealBot_Data_DefaultVar(name)
+    return sVars[name]
+end
 
 HealBot_Config_SpellsDefaults={
   EnabledKeyCombo={["New"]=true},
@@ -365,7 +370,6 @@ function HealBot_Data_InitVars()
         InHealDiv=10,
         HealAbsorbsDiv=10,
         DebugOut=false,
-        VersionResetDone={["ICONS"]="9.1.0.0",["BUFF"]="9.1.0.0",["CBUFF"]="9.1.0.0",["DEBUFF"]="9.1.0.0",["CDEBUFF"]="9.1.0.0"},
         CureCustomDefaultCastBy=1,
         TopRole="TANK",
         TargetBarRestricted=0,
@@ -458,21 +462,11 @@ function HealBot_Data_InitVars()
                              ["Target"]={R=1,G=0.9,B=0.2},["OOR"]={R=0,G=0,B=0},
                              ["Overheals"]={R=1,G=0.2,B=0.2},["Absorbs"]={R=1,G=1,B=1}},
         AuxTextPrefs={},
-        HealBot_customPermUserName={},
-        HealBot_PermMyTargets={},
-        HealBot_PermPrivateTanks={},
-        HealBot_PermPrivateHealers={},
-        HealBot_PermPrivateDamagers={},
-        HealBot_MouseWheelIndex={ ["AltUp"]=2, ["AltDown"]=3 },
-        HealBot_MouseWheelTxt={ ["AltUp"]=HEALBOT_BLIZZARD_MENU, ["AltDown"]=HEALBOT_HB_MENU },
-        HealBot_Emotes={ ["NoneUp"]=HEALBOT_EMOTE_HELLO,  ["NoneDown"]=HEALBOT_EMOTE_HELLO,
-                         ["ShiftUp"]=HEALBOT_EMOTE_HELLO, ["ShiftDown"]=HEALBOT_EMOTE_HELLO,
-                         ["CtrlUp"]=HEALBOT_EMOTE_HELLO,  ["CtrlDown"]=HEALBOT_EMOTE_HELLO,
-                         ["AltUp"]=HEALBOT_EMOTE_HELLO,   ["AltDown"]=HEALBOT_EMOTE_HELLO, },
-        HealBot_Macros={ ["NoneUp"]="",  ["NoneDown"]="",
-                         ["ShiftUp"]="", ["ShiftDown"]="",
-                         ["CtrlUp"]="",  ["CtrlDown"]="",
-                         ["AltUp"]="",   ["AltDown"]="", },
+        PermUserName={},
+        PermMyTargets={},
+        PermPrivateTanks={},
+        PermPrivateHealers={},
+        PermPrivateDamagers={},
         EmergIncRange={
             [HEALBOT_DRUID]   =false,  [HEALBOT_HUNTER]     =true,   [HEALBOT_MAGE]    =true,
             [HEALBOT_PALADIN] =false,  [HEALBOT_PRIEST]     =false,  [HEALBOT_ROGUE]   =false,
@@ -498,13 +492,13 @@ function HealBot_Data_InitVars()
             [HEALBOT_MONK]    =true,   [HEALBOT_DEATHKNIGHT]=false,  [HEALBOT_MONK]    =false, [HEALBOT_DEMONHUNTER]=false,
         },
         CDCBarColour={
-            [HEALBOT_CUSTOM_en.."15"]={ R=0.45, G=0, B=0.28, },
+            [sVars["cDebuff"]]={ R=0.45, G=0, B=0.28, },
         },
-        HealBot_Custom_Debuffs_ShowBarCol={  
+        CustomDebuffsShowBarCol={  
             [HEALBOT_CUSTOM_CAT_CUSTOM_AUTOMATIC]=4,
             ["DEFAULT"]=4,
         },
-        HealBot_Custom_Debuffs_IconGlow={  
+        CustomDebuffsIconGlow={  
             [HEALBOT_CUSTOM_CAT_CUSTOM_AUTOMATIC]=1,
             ["DEFAULT"]=1,
         },
@@ -513,21 +507,21 @@ function HealBot_Data_InitVars()
         FilterCustomDebuff={
         },
         CustomDebuffIDMethod={},
-        HealBot_Custom_Debuffs={
+        CustomDebuffs={
             -- Defaults
             [HEALBOT_CUSTOM_CAT_CUSTOM_AUTOMATIC]=15,
         },
-        HealBot_Custom_Debuffs_IconSet={},
+        CustomDebuffsIconSet={},
         Custom_Debuff_Categories=HEALBOT_CUSTOM_DEBUFF_CATS,
         CustomBuffTag={},
         IgnoreCustomBuff={},
-        HealBot_Custom_Buffs={},
-        HealBot_Custom_Buffs_IconSet={},
+        CustomBuffs={},
+        CustomBuffsIconSet={},
         CustomBuffBarColour={
-            [HEALBOT_CUSTOM_en.."Buff"]={ R=0.25, G=0.58, B=0.8, },
+            [sVars["cBuff"]]={ R=0.25, G=0.58, B=0.8, },
         },
-        HealBot_Custom_Buffs_ShowBarCol={["DEFAULT"]=4},
-        HealBot_Custom_Buffs_IconGlow={},
+        CustomBuffsShowBarCol={["DEFAULT"]=4},
+        CustomBuffsIconGlow={},
         CustomBuffIDMethod={},
         IconKeyCombo={},
         UseIconCommands=false,
@@ -814,10 +808,7 @@ Healbot_Config_Aux={};
 HealBot_Config_Spells={};
 HealBot_Config_Buffs={};
 HealBot_Config_Cures={};
-HealBot_Config_ActionIcons={}      -- Remove this soon, also from ToC's
-HealBot_Config_ActionIconsData={}  -- Remove this soon, also from ToC's
 HealBot_Class_Spells={};
-HealBot_Spells_Loadouts={};        -- Remove this soon, also from ToC's
 HealBot_Spell_Loadouts={};
 HealBot_Class_Buffs={};
 HealBot_Class_Cures={};
@@ -873,149 +864,3 @@ HealBot_Emerg_Button={};
 HealBot_Buttons={};
 HealBot_Test_Button={};
 HealBot_TimeNow=GetTime()
-
-local hbAuxBarDefaults={["COLOUR"]=1, ["ANCHOR"]=1, ["OFFSET"]=1, 
-                        ["DEPTH"]=5, ["SIZE"]=1, ["USE"]=1,
-                        ["R"]=1, ["G"]=1, ["B"]=1, ["A"]=1,
-                        ["OTYPE"]=1, ["TEXT"]=false,
-                        ["MANAONLY"]=false, ["HEALERSMANAONLY"]=false,
-                       }
-
-function HealBot_Data_AuxGetBarBoolean(key, frame, id)
-    if Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame] and Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame][id] then
-        if Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame][id][key] == false then
-            return false
-        else
-            return Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame][id][key] or hbAuxBarDefaults[key]
-        end
-    end
-    return hbAuxBarDefaults[key]
-end
-
-function HealBot_Data_AuxGetBarVar(key, frame, id)
-    if Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame] and Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame][id] then
-        return Healbot_Config_Aux.Bar[Healbot_Config_Skins.Current_Skin][frame][id][key] or hbAuxBarDefaults[key]
-    end
-    return hbAuxBarDefaults[key]
-end
-
-function HealBot_Data_AuxGetBarSkin(skin, key, frame, id)
-    if Healbot_Config_Aux.Bar[skin][frame] and Healbot_Config_Aux.Bar[skin][frame][id] then
-        return Healbot_Config_Aux.Bar[skin][frame][id][key] or hbAuxBarDefaults[key]
-    end
-    return hbAuxBarDefaults[key]
-end
-
-function HealBot_Data_AuxSetBarSkin(value, skin, key, frame, id)
-    if hbAuxBarDefaults[key] == value then
-        HealBot_Data_AuxNilBarSkin(skin, key, frame, id)
-    else
-        if not Healbot_Config_Aux.Bar[skin][frame] then Healbot_Config_Aux.Bar[skin][frame]={} end
-        if not Healbot_Config_Aux.Bar[skin][frame][id] then Healbot_Config_Aux.Bar[skin][frame][id]={} end
-        Healbot_Config_Aux.Bar[skin][frame][id][key]=value
-    end
-end
-
-function HealBot_Data_AuxSetBarVar(value, key, frame, id)
-    HealBot_Data_AuxSetBarSkin(value, Healbot_Config_Skins.Current_Skin, key, frame, id)
-end
-
-function HealBot_Data_AuxNilBarSkin(skin, key, frame, id)
-    if Healbot_Config_Aux.Bar[skin][frame] and Healbot_Config_Aux.Bar[skin][frame][id] then
-        Healbot_Config_Aux.Bar[skin][frame][id][key]=nil
-        HealBot_Util_EmptyTable(Healbot_Config_Aux.Bar[skin][frame], id)
-        if not Healbot_Config_Aux.Bar[skin][frame][id] then
-            HealBot_Util_EmptyTable(Healbot_Config_Aux.Bar[skin], frame)
-        end
-    end
-end
-
-local hbAuxBarTextDefaults={["FONT"]=HealBot_Data_Default_FontName(),
-                            ["HEIGHT"]=9, ["OUTLINE"]=1, ["MAXCHARS"]=0,
-                            ["OFFSET"]=0, ["HOFFSET"]=0, ["ALIGN"]=2,
-                            ["COLR"]=1, ["COLG"]=1, ["COLB"]=1,
-                            ["COLTYPE"]=1, ["COLDA"]=0.5, ["COLA"]=1,
-                           }
-
-function HealBot_Data_AuxGetBarTextVar(key, frame, id)
-    if Healbot_Config_Aux.BarText[Healbot_Config_Skins.Current_Skin][frame] and Healbot_Config_Aux.BarText[Healbot_Config_Skins.Current_Skin][frame][id] then
-        return Healbot_Config_Aux.BarText[Healbot_Config_Skins.Current_Skin][frame][id][key] or hbAuxBarTextDefaults[key]
-    end
-    return hbAuxBarTextDefaults[key]
-end
-
-function HealBot_Data_AuxGetBarTextSkin(skin, key, frame, id)
-    if Healbot_Config_Aux.BarText[skin][frame] and Healbot_Config_Aux.BarText[skin][frame][id] then
-        return Healbot_Config_Aux.BarText[skin][frame][id][key] or hbAuxBarTextDefaults[key]
-    end
-    return hbAuxBarTextDefaults[key]
-end
-
-function HealBot_Data_AuxSetBarTextSkin(value, skin, key, frame, id)
-    if hbAuxBarTextDefaults[key] == value then
-        HealBot_Data_AuxNilBarTextSkin(skin, key, frame, id)
-    else
-        if not Healbot_Config_Aux.BarText[skin][frame] then Healbot_Config_Aux.BarText[skin][frame]={} end
-        if not Healbot_Config_Aux.BarText[skin][frame][id] then Healbot_Config_Aux.BarText[skin][frame][id]={} end
-        Healbot_Config_Aux.BarText[skin][frame][id][key]=value
-    end
-end
-
-function HealBot_Data_AuxSetBarTextVar(value, key, frame, id)
-    HealBot_Data_AuxSetBarTextSkin(value, Healbot_Config_Skins.Current_Skin, key, frame, id)
-end
-
-function HealBot_Data_AuxNilBarTextSkin(skin, key, frame, id)
-    if Healbot_Config_Aux.BarText[skin][frame] and Healbot_Config_Aux.BarText[skin][frame][id] then
-        Healbot_Config_Aux.BarText[skin][frame][id][key]=nil
-        HealBot_Util_EmptyTable(Healbot_Config_Aux.BarText[skin][frame], id)
-        if not Healbot_Config_Aux.BarText[skin][frame][id] then
-            HealBot_Util_EmptyTable(Healbot_Config_Aux.BarText[skin], frame)
-        end
-    end
-end
-
-local hbAuxOverlayDefaults={["OVERLAP"]=1,
-                            ["OVERLAYBUFF"]=false, ["OVERLAYOOR"]=false, 
-                            ["OVERLAYTARGET"]=false, ["OVERLAYHIGHLIGHT"]=false, 
-                            ["OVERLAYDEBUFF"]=false, ["OVERLAYAGGRO"]=false, 
-                            ["OVERLAYHEALTHDROP"]=false, ["OVERLAYRECENTHEALS"]=false, 
-                           }
-
-function HealBot_Data_AuxGetOverlayBoolean(key, frame)
-    if Healbot_Config_Aux.Overlay[Healbot_Config_Skins.Current_Skin][frame] then
-        if Healbot_Config_Aux.Overlay[Healbot_Config_Skins.Current_Skin][frame][key] == false then
-            return false
-        else
-            return Healbot_Config_Aux.Overlay[Healbot_Config_Skins.Current_Skin][frame][key] or hbAuxOverlayDefaults[key]
-        end
-    end
-    return hbAuxOverlayDefaults[key]
-end
-
-function HealBot_Data_AuxGetOverlayVar(key, frame)
-    if Healbot_Config_Aux.Overlay[Healbot_Config_Skins.Current_Skin][frame] then
-        return Healbot_Config_Aux.Overlay[Healbot_Config_Skins.Current_Skin][frame][key] or hbAuxOverlayDefaults[key]
-    end
-    return hbAuxOverlayDefaults[key]
-end
-
-function HealBot_Data_AuxSetOverlaySkin(value, skin, key, frame)
-    if hbAuxOverlayDefaults[key] == value then
-        HealBot_Data_AuxNilOverlaySkin(skin, key, frame)
-    else
-        if not Healbot_Config_Aux.Overlay[skin][frame] then Healbot_Config_Aux.Overlay[skin][frame]={} end
-        Healbot_Config_Aux.Overlay[skin][frame][key]=value
-    end
-end
-
-function HealBot_Data_AuxSetOverlayVar(value, key, frame)
-    HealBot_Data_AuxSetOverlaySkin(value, Healbot_Config_Skins.Current_Skin, key, frame)
-end
-
-function HealBot_Data_AuxNilOverlaySkin(skin, key, frame)
-    if Healbot_Config_Aux.Overlay[skin][frame] then
-        Healbot_Config_Aux.Overlay[skin][frame][key]=nil
-        HealBot_Util_EmptyTable(Healbot_Config_Aux.Overlay[skin], frame)
-    end
-end

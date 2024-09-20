@@ -57,7 +57,7 @@ function Cacher:OnEnable()
 
 	for id = 1, 5000 do
 		local data = C.CurrencyInfo.GetCurrencyInfo(id)
-		if data and data.quantity > 0 and data.quality > 0 then
+		if data and data.quantity > 0 and data.quality > 0 and not C.CurrencyInfo.IsAccountWideCurrency(id) then
 			self.player.currency[id] = data.quantity
 		end
 	end
@@ -89,7 +89,7 @@ function Cacher:PLAYER_MONEY()
 end
 
 function Cacher:CURRENCY_DISPLAY_UPDATE(_, id, quantity)
-	if id and quantity then
+	if id and quantity and not C.CurrencyInfo.IsAccountWideCurrency(id) then
 		self.player.currency[id] = quantity > 0 and quantity or nil
 	end
 end

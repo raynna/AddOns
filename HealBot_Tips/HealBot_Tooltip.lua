@@ -5,6 +5,7 @@ local xButton=nil
 local _
 local powerCols={["r"]=1,["g"]=1,["b"]=1}
 local playerPowerCols={["r"]=1,["g"]=1,["b"]=1}
+local customDebuffPriority=HealBot_Data_DefaultVar("cDebuff")
 local hbCommands={ [strlower(HEALBOT_DISABLED_TARGET)]=true,
                    [strlower(HEALBOT_ASSIST)]=true,
                    [strlower(HEALBOT_FOCUS)]=true,
@@ -511,16 +512,9 @@ function HealBot_ToolTip_SetTooltipPos(frame)
             hbtPosY=hbtPosY/UIParent:GetScale();
             hbTip:SetOwner(hbtPosFrm, "ANCHOR_NONE")
             hbTip:SetPoint("TOPLEFT","WorldFrame","BOTTOMLEFT",hbtPosX+25,hbtPosY-20);
-        elseif Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin] then
-            hbTip:SetOwner(hbtPosFrm, "ANCHOR_NONE")
-            hbTip:SetPoint(Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"],
-                                     "UIParent",
-                                     Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"],
-                                     Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORX"],
-                                     Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORY"])
         else
             hbTip:SetOwner(hbtPosFrm, "ANCHOR_NONE")
-            hbTip:SetPoint("BOTTOMRIGHT","UIParent","BOTTOMRIGHT",-275,175);
+            hbTip:SetPoint(HealBot_Tooltip_GetVar("ANCHORPOINT"), "UIParent", HealBot_Tooltip_GetVar("ANCHORPOINT"), HealBot_Tooltip_GetVar("ANCHORX"), HealBot_Tooltip_GetVar("ANCHORY"))
         end
     else
         hbTip:SetOwner(hbtPosFrm, "ANCHOR_NONE")
@@ -590,7 +584,6 @@ local function HealBot_Tooltip_addPlayerDebuffLine(uName, debuffId, debuffName)
                                         (HealBot_Config_Cures.CDCBarColour[DebuffType].B or 0.4)+0.2,
                                         1," ",0,0,0,0)
         else
-            local customDebuffPriority=HEALBOT_CUSTOM_en.."15"
             HealBot_Tooltip_SetLine(uName.." suffers from "..debuffName,
                                         (HealBot_Globals.CDCBarColour[customDebuffPriority].R or 0.5)+0.2,
                                         (HealBot_Globals.CDCBarColour[customDebuffPriority].G or 0.2)+0.2,
@@ -874,7 +867,7 @@ function HealBot_Action_DoRefreshTooltip()
                     UnitDebuffIcons=HealBot_Aura_ReturnDebuffdetails(xButton.id)
                     if UnitDebuffIcons then
                         HealBot_Tooltip_luVars["CrDebuffLine"]=false
-                        for i=51,Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][xButton.frame][1]["MAXDICONS"]+50 do
+                        for i=51,HealBot_Skins_GetIconVar("MAXDICONS", xButton.frame, 1)+50 do
                             if UnitDebuffIcons[i].current then
                                 ttName=HealBot_Aura_ReturnDebuffdetailsname(UnitDebuffIcons[i].spellId)
                                 if ttName then
@@ -884,7 +877,7 @@ function HealBot_Action_DoRefreshTooltip()
                                 break
                             end
                         end
-                        for i=56,Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][xButton.frame][2]["MAXDICONS"]+55 do
+                        for i=56,HealBot_Skins_GetIconVar("MAXDICONS", xButton.frame, 2)+55 do
                             if UnitDebuffIcons[i].current then
                                 ttName=HealBot_Aura_ReturnDebuffdetailsname(UnitDebuffIcons[i].spellId)
                                 if ttName then
@@ -894,7 +887,7 @@ function HealBot_Action_DoRefreshTooltip()
                                 break
                             end
                         end
-                        for i=58,Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][xButton.frame][3]["MAXDICONS"]+57 do
+                        for i=58,HealBot_Skins_GetIconVar("MAXDICONS", xButton.frame, 3)+57 do
                             if UnitDebuffIcons[i].current then
                                 ttName=HealBot_Aura_ReturnDebuffdetailsname(UnitDebuffIcons[i].spellId)
                                 if ttName then
@@ -1343,34 +1336,30 @@ function HealBot_Tooltip_DisplayIconTooltip(frame, details, name, aType, desc, r
     local iGlow=1
     local iScale=1
     if aType == "Buff" then
-        aPrio=HealBot_Globals.HealBot_Custom_Buffs[details.spellId] or HealBot_Globals.HealBot_Custom_Buffs[name] or 99
-        if aPrio == 99 then
-            local bId=HealBot_Options_MissingBuffPrio(details.spellId)
-            aPrio=HealBot_Globals.HealBot_Custom_Buffs[bId] or 20
-        end
-        aCol=HealBot_Globals.HealBot_Custom_Buffs_ShowBarCol[name] or HealBot_Globals.HealBot_Custom_Buffs_ShowBarCol[details.spellId] or 1
-        iGlow=HealBot_Globals.HealBot_Custom_Buffs_IconGlow[name] or HealBot_Globals.HealBot_Custom_Buffs_IconGlow[details.spellId] or 1
+        aPrio=HealBot_Globals.CustomBuffs[details.spellId] or HealBot_Globals.CustomBuffs[name] or 20
+        aCol=HealBot_Globals.CustomBuffsShowBarCol[name] or HealBot_Globals.CustomBuffsShowBarCol[details.spellId] or 1
+        iGlow=HealBot_Globals.CustomBuffsIconGlow[name] or HealBot_Globals.CustomBuffsIconGlow[details.spellId] or 1
         if id<9 then
-            iScale=Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][frame][1]["BSCALE"]
+            iScale=HealBot_Skins_GetIconVar("BSCALE", frame, 1)
         elseif id<13 then
-            iScale=Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][frame][2]["BSCALE"]
+            iScale=HealBot_Skins_GetIconVar("BSCALE", frame, 2)
             iSet=2
         else
-            iScale=Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][frame][3]["BSCALE"]
+            iScale=HealBot_Skins_GetIconVar("BSCALE", frame, 3)
             iSet=3
         end
     else
         aPrio, bPrio=HealBot_Options_retDebuffPriority(details.spellId, name, details.debuffType)
         if bPrio<aPrio then aPrio=bPrio end
-        aCol=HealBot_Globals.HealBot_Custom_Debuffs_ShowBarCol[details.spellId] or HealBot_Globals.HealBot_Custom_Debuffs_ShowBarCol[name] or 1
-        iGlow=HealBot_Globals.HealBot_Custom_Debuffs_IconGlow[name] or HealBot_Globals.HealBot_Custom_Debuffs_IconGlow[details.spellId] or 1
+        aCol=HealBot_Globals.CustomDebuffsShowBarCol[details.spellId] or HealBot_Globals.CustomDebuffsShowBarCol[name] or 4
+        iGlow=HealBot_Globals.CustomDebuffsIconGlow[name] or HealBot_Globals.CustomDebuffsIconGlow[details.spellId] or 1
         if id<59 then
-            iScale=Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][frame][1]["DSCALE"]
+            iScale=HealBot_Skins_GetIconVar("DSCALE", frame, 1)
         elseif id<63 then
-            iScale=Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][frame][2]["DSCALE"]
+            iScale=HealBot_Skins_GetIconVar("DSCALE", frame, 2)
             iSet=2
         else
-            iScale=Healbot_Config_Skins.IconSets[Healbot_Config_Skins.Current_Skin][frame][3]["DSCALE"]
+            iScale=HealBot_Skins_GetIconVar("DSCALE", frame, 3)
             iSet=3
         end
     end
@@ -1448,7 +1437,6 @@ function HealBot_Tooltip_DebuffIconTooltip(button, id)
                         g=(HealBot_Config_Cures.CDCBarColour[DebuffType].G or 0.2)+0.2
                         b=(HealBot_Config_Cures.CDCBarColour[DebuffType].B or 0.4)+0.2
                     else
-                        local customDebuffPriority=HEALBOT_CUSTOM_en.."15"
                         r=(HealBot_Globals.CDCBarColour[customDebuffPriority].R or 0.5)+0.2
                         g=(HealBot_Globals.CDCBarColour[customDebuffPriority].G or 0.2)+0.2
                         b=(HealBot_Globals.CDCBarColour[customDebuffPriority].B or 0.4)+0.2
@@ -1632,9 +1620,9 @@ local function HealBot_Tooltip_CustomAnchor_SetPoint()
     if not HealBot_Globals.Tooltip_UseGameTooltip then
         fScale=HealBot_Globals.Tooltip_Scale
     end
-	local fY=Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORY"] or 175
-	local fX=Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORX"] or -275
-    local fPoint=Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"] or "BOTTOMRIGHT"
+	local fY=HealBot_Tooltip_GetVar("ANCHORY")
+	local fX=HealBot_Tooltip_GetVar("ANCHORX")
+    local fPoint=HealBot_Tooltip_GetVar("ANCHORPOINT")
     local fWidth=hbCustomTipAnchor:GetWidth()
     local fHeight=hbCustomTipAnchor:GetHeight()
     if fPoint == "BOTTOMLEFT" then
@@ -1666,9 +1654,9 @@ local function HealBot_Tooltip_CustomAnchor_SetPoint()
             fX=0-floor(GetScreenWidth()/fScale)+fWidth
         end
     end
-	Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORY"]=ceil(fY)
-	Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORX"]=ceil(fX)
-    Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"]=fPoint
+    HealBot_Tooltip_SetVar(ceil(fY), "ANCHORY")
+    HealBot_Tooltip_SetVar(ceil(fX), "ANCHORX")
+    HealBot_Tooltip_SetVar(fPoint, "ANCHORPOINT")
 	hbCustomTipAnchor:ClearAllPoints()
 	hbCustomTipAnchor:SetPoint(fPoint,"WorldFrame",fPoint,fX,fY);
 end
@@ -1683,9 +1671,9 @@ end
 
 local function HealBot_Tooltip_CustomAnchor_SetAnchorText()
       --HealBot_setCall("HealBot_Tooltip_CustomAnchor_SetAnchorText")
-    hbCustomTipAnchorText["AP1"]:SetText(HEALBOT_OPTIONS_TTCUSTOMANCHOR_POINT..": "..Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"])
-    hbCustomTipAnchorText["AX2"]:SetText(Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORX"])
-    hbCustomTipAnchorText["AY2"]:SetText(Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORY"])
+    hbCustomTipAnchorText["AP1"]:SetText(HEALBOT_OPTIONS_TTCUSTOMANCHOR_POINT..": "..HealBot_Tooltip_GetVar("ANCHORPOINT"))
+    hbCustomTipAnchorText["AX2"]:SetText(HealBot_Tooltip_GetVar("ANCHORX"))
+    hbCustomTipAnchorText["AY2"]:SetText(HealBot_Tooltip_GetVar("ANCHORY"))
 end
 
 local function HealBot_Tooltip_CustomAnchor_SavePoints()
@@ -1695,17 +1683,17 @@ local function HealBot_Tooltip_CustomAnchor_SavePoints()
     if not HealBot_Globals.Tooltip_UseGameTooltip then
         fScale=HealBot_Globals.Tooltip_Scale
     end
-    if Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"] == "BOTTOMRIGHT" then
+    if HealBot_Tooltip_GetVar("ANCHORPOINT") == "BOTTOMRIGHT" then
         fX=hbCustomTipAnchor:GetRight()-floor(GetScreenWidth()/fScale)
         fY=hbCustomTipAnchor:GetBottom()
         if fX>0 then fX=0 end
         if fY<0 then fY=0 end
-    elseif Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"] == "TOPRIGHT" then
+    elseif HealBot_Tooltip_GetVar("ANCHORPOINT") == "TOPRIGHT" then
         fX=hbCustomTipAnchor:GetRight()-floor(GetScreenWidth()/fScale)
         fY=hbCustomTipAnchor:GetTop()-floor(GetScreenHeight()/fScale)
         if fX>0 then fX=0 end
         if fY>0 then fY=0 end
-    elseif Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"] == "BOTTOMLEFT" then
+    elseif HealBot_Tooltip_GetVar("ANCHORPOINT") == "BOTTOMLEFT" then
         fX=hbCustomTipAnchor:GetLeft()
         fY=hbCustomTipAnchor:GetBottom()
         if fX<0 then fX=0 end
@@ -1716,8 +1704,8 @@ local function HealBot_Tooltip_CustomAnchor_SavePoints()
         if fX<0 then fX=0 end
         if fY>0 then fY=0 end
     end
-    Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORY"]=ceil(fY)
-    Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORX"]=ceil(fX)
+    HealBot_Tooltip_SetVar(ceil(fY), "ANCHORY")
+    HealBot_Tooltip_SetVar(ceil(fX), "ANCHORX")
     HealBot_Tooltip_CustomAnchor_SetAnchorText()
     HealBot_Tooltip_CustomAnchor_SetPoint()
 end
@@ -1767,7 +1755,7 @@ end
 
 local function HealBot_Tooltip_CustomAnchor_SetAnchor(loc)
       --HealBot_setCall("HealBot_Tooltip_CustomAnchor_SetAnchor")
-    Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"]=loc
+    HealBot_Tooltip_SetVar(loc, "ANCHORPOINT")
     hbCustomTipAnchorObjects["TOPLEFT"]:SetChecked(false)
     hbCustomTipAnchorObjects["TOPRIGHT"]:SetChecked(false)
     hbCustomTipAnchorObjects["BOTTOMLEFT"]:SetChecked(false)
@@ -1786,9 +1774,9 @@ end
 function HealBot_Tooltip_ResetCustomAnchor()
       --HealBot_setCall("HealBot_Tooltip_ResetCustomAnchor")
     if Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin] then
-        Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORY"]=175
-        Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORX"]=-275
-        Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"]="BOTTOMRIGHT"
+        HealBot_Tooltip_NilVar("ANCHORY")
+        HealBot_Tooltip_NilVar("ANCHORX")
+        HealBot_Tooltip_NilVar("ANCHORPOINT")
         if hbCustomTipAnchor then
             HealBot_Tooltip_CustomAnchor_SetAnchor("BOTTOMRIGHT")
         end
@@ -1849,13 +1837,30 @@ function HealBot_Tooltip_ShowCustomAnchor()
     hbCustomTipAnchorObjects["TOPRIGHT"]:SetChecked(false)
     hbCustomTipAnchorObjects["BOTTOMLEFT"]:SetChecked(false)
     hbCustomTipAnchorObjects["BOTTOMRIGHT"]:SetChecked(false)
-    if not Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin] then
-        Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]={}
-        hbCustomTipAnchorObjects["BOTTOMRIGHT"]:SetChecked(true)
-    else
-        hbCustomTipAnchorObjects[Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin]["ANCHORPOINT"]]:SetChecked(true)
-    end
+    hbCustomTipAnchorObjects[HealBot_Tooltip_GetVar("ANCHORPOINT")]:SetChecked(true)
     HealBot_Tooltip_CustomAnchor_SetPoint()
     HealBot_Tooltip_CustomAnchor_SetText()
     hbCustomTipAnchor:Show()
 end
+
+
+local hbDefaultTips={["ANCHORY"]=175, ["ANCHORX"]=-275, ["ANCHORPOINT"]="BOTTOMRIGHT"}
+function HealBot_Tooltip_GetVar(key)
+    if Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin] then
+        return Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin][key] or hbDefaultTips[key]
+    end
+    return hbDefaultTips[key]
+end
+
+function HealBot_Tooltip_SetVar(value, key)
+    if value == hbDefaultTips[key] then
+        HealBot_Tooltip_NilVar(key)
+    else
+        Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin][key]=value
+    end
+end
+
+function HealBot_Tooltip_NilVar(key)
+    Healbot_Config_Skins.ToolTip[Healbot_Config_Skins.Current_Skin][key]=nil
+    HealBot_Util_EmptyTable(Healbot_Config_Skins.ToolTip, Healbot_Config_Skins.Current_Skin)
+end    

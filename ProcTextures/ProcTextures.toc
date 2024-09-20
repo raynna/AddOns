@@ -1,0 +1,4 @@
+## Interface: 90205
+## Title: ProcTextures
+## Notes: This is just a folder that contains all the textures for the WeakAuras. Have fun!
+## Author: Tacapuc

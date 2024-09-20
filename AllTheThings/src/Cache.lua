@@ -63,7 +63,6 @@ local CreateDataCache = function(name, skipMapCaching)
 	end
 	setmetatable(cache, fieldMeta);
 	cache.npcID = cache.creatureID;	-- identical cache as creatureID (probably deprecate npcID use eventually)
-	--cache.requireSkill = cache.professionID;	-- identical cache as professionID (in Retail)
 	return cache;
 end
 currentCache = CreateDataCache("default");
@@ -464,7 +463,7 @@ local fieldConverters = {
 	["otherItemID"] = function(group, value)
 		CacheField(group, "itemID", value);
 	end,
-	["drakewatcherManuscriptID"] = function(group, value)
+	["mountmodID"] = function(group, value)
 		CacheField(group, "itemID", value);
 	end,
 	["heirloomID"] = function(group, value)
@@ -491,7 +490,7 @@ local fieldConverters = {
 		CacheField(group, "spellID", value);
 	end,
 	["requireSkill"] = function(group, value)
-		CacheField(group, "requireSkill", value);	-- NOTE: professionID in Retail, investigate why
+		CacheField(group, "requireSkill", value);
 	end,
 	["runeforgePowerID"] = function(group, value)
 		CacheField(group, "runeforgePowerID", value);
@@ -733,7 +732,7 @@ if app.IsRetail then
 		CacheField(group, "itemID", value);
 		cacheGroupForModItemID[#cacheGroupForModItemID + 1] = group
 	end
-	fieldConverters.drakewatcherManuscriptID = fieldConverters.itemID;
+	fieldConverters.mountmodID = fieldConverters.itemID;
 	fieldConverters.heirloomID = fieldConverters.itemID;
 	tinsert(postscripts, function()
 		if #cacheGroupForModItemID == 0 then return end

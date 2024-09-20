@@ -41,8 +41,8 @@ do
 				if not t.itemID or not t.link then
 					_t.text = "|cff0070dd"..UNKNOWN.."|r";
 				end
-			if field then return _t[field]; end
 			end
+			if field then return _t[field]; end
 		end
 		local function default_link(t)
 			if t.itemID then
@@ -119,6 +119,11 @@ do
 				-- certain Battle Pets are per Character, so we can implicitly check for them as Account-Wide since Battle Pets have no toggle for that
 				-- account-wide collected
 				if app.IsAccountCached(CACHE, id) then return 2; end
+			end,
+			trackable = app.ReturnTrue,
+			saved = function(t)
+				-- character collected
+				if CollectedSpeciesHelper[t[KEY]] then return 1; end
 			end,
 			costCollectibles = function(t)
 				return cache.GetCachedField(t, "costCollectibles", default_costCollectibles);

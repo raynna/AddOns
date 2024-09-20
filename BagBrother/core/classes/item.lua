@@ -69,35 +69,31 @@ function Item:Construct()
 
 	b:SetScript('OnEvent', nil)
 	b:SetScript('OnShow', b.Update)
-	b:HookScript('OnClick', b.OnPostClick)
-	b:SetScript('OnEnter', b.OnEnter)
-	b:SetScript('OnLeave', b.OnLeave)
-	b:SetScript('OnHide', b.OnHide)
 	return b
 end
 
-function Item:Bind(frame) -- required for secure frames
-	for k in pairs(frame) do
+function Item:Bind(button) -- required for secure frames
+	for k in pairs(button) do
 		if self[k] then
-			frame[k] = nil
+			button[k] = nil
 		end
 	end
 
 	local class = self
 	while class do
 		for k,v in pairs(class) do
-			frame[k] = frame[k] or v
+			button[k] = button[k] or v
 		end
 
 		class = class:GetSuper()
 	end
-	return frame
+	return button
 end
 
 
 --[[ Interaction ]]--
 
-function Item:OnPostClick(button)
+function Item:PostClick(button)
 	if Addon.lockMode then
 		local locks = GetOrCreateTableEntry(self:GetProfile().lockedSlots, self:GetBag())
 		locks[self:GetID()] = not locks[self:GetID()] or nil
@@ -120,13 +116,6 @@ function Item:OnLeave()
 	ResetCursor()
 end
 
-function Item:OnHide()
-	if self.hasStackSplit == 1 then
-		StackSplitFrame:Hide()
-	end
-	self:UnregisterAll()
-end
-
 
 --[[ Update ]]--
 
@@ -142,11 +131,11 @@ function Item:Update()
 end
 
 function Item:UpdateBorder()
-	local id, quality = self.info.itemID, self.info.quality
+	local id, link, quality = self.info.itemID, self.info.hyperlink, self.info.quality
 	local quest, bang = self:GetQuestInfo()
 	local r,g,b
 
-	SetItemButtonQuality(self, quality, self.info.hyperlink, false, self.info.isBound)
+	SetItemButtonQuality(self, quality, link, false, self.info.isBound)
 
 	if id then
 		if Addon.sets.glowQuest and quest or bang then
@@ -165,7 +154,7 @@ function Item:UpdateBorder()
 			self.IconBorder:SetVertexColor(r,g,b)
 		end
 
-		if Search:IsUncollected(id) then
+		if link and Search:IsUncollected(id, link) then
 			self.IconOverlay:SetAtlas('CosmeticIconFrame')
 			self.IconOverlay:Show()
 		end
@@ -266,7 +255,7 @@ do
 	Item.Dummy:SetScript('OnClick', function(dummy, button)
 		local parent = dummy:GetParent()
 		if not HandleModifiedItemClick(parent.info.hyperlink) then
-			parent:OnPostClick(button)
+			parent:PostClick(button)
 		end
 	end)
 	

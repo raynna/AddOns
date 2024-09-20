@@ -70,8 +70,8 @@ function Details222.StartUp.StartMeUp()
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --initialize
 
-	--make an encounter journal cache
-	C_Timer.After(1, Details222.EJCache.CreateEncounterJournalDump)
+	--make an encounter journal cache. the cache will load before this if any function tries to get information from the cache
+	C_Timer.After(3, Details222.EJCache.CreateEncounterJournalDump)
 
 	--plugin container
 	Details:CreatePluginWindowContainer()
@@ -94,6 +94,8 @@ function Details222.StartUp.StartMeUp()
 	Details222.LoadCommentatorFunctions()
 
 	Details222.AuraScan.FindAndIgnoreWorldAuras()
+
+	Details222.Notes.RegisterForOpenRaidNotes()
 
 	if (Details.ocd_tracker.show_options) then
 		Details:InitializeCDTrackerWindow()
@@ -277,6 +279,10 @@ function Details222.StartUp.StartMeUp()
 		Details.listener:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		Details.listener:RegisterEvent("PLAYER_ENTERING_WORLD")
 
+		if (C_EventUtils.IsEventValid("SCENARIO_COMPLETED")) then
+			Details.listener:RegisterEvent("SCENARIO_COMPLETED")
+		end
+
 		Details.listener:RegisterEvent("ENCOUNTER_START")
 		Details.listener:RegisterEvent("ENCOUNTER_END")
 
@@ -334,7 +340,6 @@ function Details222.StartUp.StartMeUp()
 			Details:SendEvent("GROUP_ONLEAVE")
 		end
 
-		Details.last_zone_type = "INIT"
 		Details.parser_functions:ZONE_CHANGED_NEW_AREA()
 		Details.AnnounceStartup = nil
 	end
@@ -702,13 +707,19 @@ function Details222.StartUp.StartMeUp()
 	if (DetailsFramework.IsWarWow()) then
 	C_Timer.After(1, function() if (SplashFrame) then SplashFrame:Hide() end end)
 	function HelpTip:SetHelpTipsEnabled(flag, enabled)
-		--HelpTip.supressHelpTips[flag] = false
+		if (Details.streamer_config.no_helptips) then
+			HelpTip.supressHelpTips[flag] = false
+		end
 	end
 	hooksecurefunc(HelpTipTemplateMixin, "OnShow", function(self)
-		--self:Hide()
+		if (Details.streamer_config.no_helptips) then
+			self:Hide()
+		end
 	end)
 	hooksecurefunc(HelpTipTemplateMixin, "OnUpdate", function(self)
-		--self:Hide()
+		if (Details.streamer_config.no_helptips) then
+			self:Hide()
+		end
 	end)
 
 	C_Timer.After(5, function()
